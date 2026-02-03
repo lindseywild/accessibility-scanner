@@ -39,7 +39,7 @@ Uses [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/devel
 - Color contrast issues
 - Missing heading structure
 - Empty headings
-- And more WCAG violations
+- ...And more WCAG violations
 
 ### 2. Horizontal Scroll Check (320x256 viewport)
 
