@@ -29,21 +29,24 @@ List of potential accessibility gaps, as stringified JSON. For example:
 '[]'
 ```
 
-## Testing
+## Scanning
 
-### Horizontal Scroll Test
+The find action performs two types of accessibility scans on each URL:
 
-The `horizontal-scroll.test.ts` file contains tests that scan pages at a 320px x 256px viewport to ensure no horizontal scrolling is required. This tests that documents are responsive and accessible on small viewports.
+### 1. Axe Core Accessibility Scan
 
-To run the tests locally:
+Uses [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) to detect common accessibility violations like:
+- Color contrast issues
+- Missing heading structure
+- Empty headings
+- And more WCAG violations
 
-1. Start the test site server (e.g., `bundle exec puma -b tcp://127.0.0.1:4000` in the site directory)
-2. Run `npm test` in the find action directory
+### 2. Horizontal Scroll Check (320x256 viewport)
 
-The tests check the following pages:
-- Home page
-- About page
-- 404 page
-- Blog post page
+Automatically checks if pages require horizontal scrolling at a 320px x 256px viewport. This tests responsive design and ensures content is accessible on small mobile viewports, aligning with WCAG 2.1 Level AA Success Criterion 1.4.10 (Reflow).
 
-Each test verifies that `document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1` (the +1 accounts for rounding).
+If a page requires horizontal scrolling at this viewport size, a finding is generated with:
+- **scannerType**: `viewport`
+- **ruleId**: `horizontal-scroll-320x256`
+- **problemShort**: page requires horizontal scrolling at 320x256 viewport
+- **problemUrl**: https://www.w3.org/WAI/WCAG21/Understanding/reflow.html

@@ -6,8 +6,7 @@
   "module": "dist/index.js",
   "scripts": {
     "start": "node bootstrap.js",
-    "build": "tsc",
-    "test": "playwright test"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "GitHub",
@@ -19,7 +18,6 @@
     "playwright": "^1.57.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3",
     "typescript": "^5.9.3"
   }
