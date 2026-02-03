@@ -12,39 +12,39 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   console.log(`Scanning ${page.url()}`);
 
   let findings: Finding[] = [];
-  try {
-    const rawFindings = await new AxeBuilder({ page }).analyze();
-    findings = rawFindings.violations.map(violation => ({
-      scannerType: 'axe',
-      url,
-      html: violation.nodes[0].html.replace(/'/g, "&apos;"),
-      problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
-      problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
-      ruleId: violation.id,
-      solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
-      solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
-    }));
-  } catch (e) {
-    // do something with the error
-  }
+  // try {
+  //   const rawFindings = await new AxeBuilder({ page }).analyze();
+  //   findings = rawFindings.violations.map(violation => ({
+  //     scannerType: 'axe',
+  //     url,
+  //     html: violation.nodes[0].html.replace(/'/g, "&apos;"),
+  //     problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
+  //     problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
+  //     ruleId: violation.id,
+  //     solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
+  //     solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
+  //   }));
+  // } catch (e) {
+  //   // do something with the error
+  // }
 
   // Check for horizontal scrolling at 320x256 viewport
   try {
+    console.log('testing!')
     await page.setViewportSize({ width: 320, height: 256 });
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+
+    console.log('widths of page', scrollWidth, clientWidth)
     
     // If horizontal scroll is required (with 1px tolerance for rounding)
     if (scrollWidth > clientWidth + 1) {
-      // Get the lang attribute from the page for the html field
-      // This follows the pattern used by axe-core for page-level findings
-      const lang = await page.evaluate(() => document.documentElement.lang || 'en');
-      
+      console.log('this page is too wide')
       findings.push({
         scannerType: 'viewport',
         ruleId: 'horizontal-scroll-320x256',
         url,
-        html: `<html lang="${lang}">`.replace(/'/g, "&apos;"),
+        html: 'n/a',
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
         problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
         solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
