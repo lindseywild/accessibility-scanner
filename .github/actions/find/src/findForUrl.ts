@@ -31,14 +31,14 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   // Check for horizontal scrolling at 320x256 viewport
   try {
     console.log('testing!')
+    await page.waitForLoadState('networkidle')
     await page.setViewportSize({ width: 320, height: 256 });
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
 
     console.log('widths of page', scrollWidth, clientWidth)
     
-    // If horizontal scroll is required (with 1px tolerance for rounding)
-    if (scrollWidth > clientWidth + 1) {
+    if (scrollWidth > clientWidth) {
       console.log('this page is too wide')
       findings.push({
         scannerType: 'viewport',
