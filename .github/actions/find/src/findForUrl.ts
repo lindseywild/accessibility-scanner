@@ -25,7 +25,7 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
       solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
     }));
   } catch (e) {
-    // do something with the error
+    console.error('Error during axe accessibility scan:', e);
   }
 
   // Check for horizontal scrolling at 320x256 viewport
@@ -39,12 +39,14 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
       // Get the lang attribute from the page for the html field
       // This follows the pattern used by axe-core for page-level findings
       const lang = await page.evaluate(() => document.documentElement.lang || 'en');
+      // Sanitize lang to prevent injection (only allow valid language codes)
+      const sanitizedLang = lang.replace(/[^a-zA-Z0-9-]/g, '') || 'en';
       
       findings.push({
         scannerType: 'viewport',
         ruleId: 'horizontal-scroll-320x256',
         url,
-        html: `<html lang="${lang}">`.replace(/'/g, "&apos;"),
+        html: `<html lang="${sanitizedLang}">`.replace(/'/g, "&apos;"),
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
         problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
         solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
