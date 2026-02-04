@@ -36,17 +36,12 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
     
     // If horizontal scroll is required (with 1px tolerance for rounding)
     if (scrollWidth > clientWidth + 1) {
-      // Get the lang attribute from the page for the html field
-      // This follows the pattern used by axe-core for page-level findings
-      const lang = await page.evaluate(() => document.documentElement.lang || 'en');
-      // Sanitize lang to prevent injection (only allow valid language codes)
-      const sanitizedLang = lang.replace(/[^a-zA-Z0-9-]/g, '') || 'en';
       
       findings.push({
         scannerType: 'viewport',
         ruleId: 'horizontal-scroll-320x256',
         url,
-        html: `<html lang="${sanitizedLang}">`.replace(/'/g, "&apos;"),
+        html: 'n/a',
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
         problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
         solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
