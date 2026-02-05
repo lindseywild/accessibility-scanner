@@ -40,7 +40,7 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
     if (scrollWidth > clientWidth) {
       console.log('this page is too wide')
       findings.push({
-        scannerType: 'viewport',
+        scannerType: 'axe',
         ruleId: 'horizontal-scroll-320x256',
         url,
         html: `<html scrollWidth="${scrollWidth}" clientWidth="${clientWidth}">`,
