@@ -5,7 +5,7 @@ jobs:
   accessibility_scanner:
     runs-on: ubuntu-latest
     steps:
-      - uses: lindseywild/accessibility-scanner@copilot/add-page-scroll-test
+      - uses: lindseywild/accessibility-scanner@copilot-add-page-scroll-test
         with:
           urls: |
             https://github.com/partners/service-channel-partners
