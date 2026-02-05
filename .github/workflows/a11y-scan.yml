@@ -5,7 +5,7 @@ jobs:
   accessibility_scanner:
     runs-on: ubuntu-latest
     steps:
-      - uses: github/accessibility-scanner@v2
+      - uses: lindseywild/accessibility-scanner@main
         with:
           urls: |
             https://github.com
