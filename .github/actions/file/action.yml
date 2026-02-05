@@ -14,6 +14,9 @@ inputs:
   cached_filings:
     description: "Cached filings from previous runs, as stringified JSON. Without this, duplicate issues may be filed."
     required: false
+  run_id:
+    description: "GitHub Actions workflow run ID for linking to screenshot artifacts"
+    required: false
 
 outputs:
   filings:

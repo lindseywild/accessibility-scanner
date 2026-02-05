@@ -16,7 +16,7 @@ function truncateWithEllipsis(text: string, maxLength: number): string {
   return text.length > maxLength ? text.slice(0, maxLength - 1) + '…' : text;
 }
 
-export async function openIssue(octokit: Octokit, repoWithOwner: string, finding: Finding) {
+export async function openIssue(octokit: Octokit, repoWithOwner: string, finding: Finding, runId?: string) {
   const owner = repoWithOwner.split('/')[0];
   const repo = repoWithOwner.split('/')[1];
 
@@ -35,6 +35,21 @@ export async function openIssue(octokit: Octokit, repoWithOwner: string, finding
         : line
     )
     .join("\n");
+  
+  // Add screenshot section if screenshot was captured
+  let screenshotSection = '';
+  if (finding.screenshotId && runId) {
+    const artifactUrl = `https://github.com/${repoWithOwner}/actions/runs/${runId}/artifacts`;
+    screenshotSection = `\n\n## Screenshot
+
+A screenshot was captured when this issue was detected. You can view it in the workflow artifacts.
+
+[📸 View screenshots in workflow artifacts](${artifactUrl})
+
+> Screenshot ID: \`${finding.screenshotId}\`
+`;
+  }
+  
   const acceptanceCriteria = `## Acceptance Criteria
 - [ ] The specific axe violation reported in this issue is no longer reproducible.
 - [ ] The fix MUST meet WCAG 2.1 guidelines OR the accessibility standards specified by the repository or organization.
@@ -43,7 +58,7 @@ export async function openIssue(octokit: Octokit, repoWithOwner: string, finding
 `;
   const body = `## What
 An accessibility scan flagged the element \`${finding.html}\` on ${finding.url} because ${finding.problemShort}. Learn more about why this was flagged by visiting ${finding.problemUrl}.
-
+${screenshotSection}
 To fix this, ${finding.solutionShort}.
 ${solutionLong ? `\nSpecifically:\n\n${solutionLong}` : ''}
 

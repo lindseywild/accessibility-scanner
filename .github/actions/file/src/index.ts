@@ -20,11 +20,13 @@ export default async function () {
   );
   const repoWithOwner = core.getInput("repository", { required: true });
   const token = core.getInput("token", { required: true });
+  const runId = core.getInput("run_id", { required: false });
   const cachedFilings: (ResolvedFiling | RepeatedFiling)[] = JSON.parse(
     core.getInput("cached_filings", { required: false }) || "[]"
   );
   core.debug(`Input: 'findings: ${JSON.stringify(findings)}'`);
   core.debug(`Input: 'repository: ${repoWithOwner}'`);
+  core.debug(`Input: 'run_id: ${runId}'`);
   core.debug(`Input: 'cached_filings: ${JSON.stringify(cachedFilings)}'`);
 
   const octokit = new OctokitWithThrottling({
@@ -61,7 +63,7 @@ export default async function () {
         filing.issue.state = "closed";
       } else if (isNewFiling(filing)) {
         // Open a new issue for the filing
-        response = await openIssue(octokit, repoWithOwner, filing.findings[0]);
+        response = await openIssue(octokit, repoWithOwner, filing.findings[0], runId);
         (filing as any).issue = { state: "open" } as Issue;
       } else if (isRepeatedFiling(filing)) {
         // Reopen the filing’s issue (if necessary)

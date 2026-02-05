@@ -80,6 +80,14 @@ runs:
       with:
         urls: ${{ inputs.urls }}
         auth_context: ${{ inputs.auth_context || steps.auth.outputs.auth_context }}
+    - name: Upload Screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: accessibility-screenshots
+        path: .screenshots/
+        retention-days: 30
+        if-no-files-found: ignore
     - name: File
       id: file
       uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/file
@@ -88,6 +96,7 @@ runs:
         repository: ${{ inputs.repository }}
         token: ${{ inputs.token }}
         cached_filings: ${{ steps.normalize_cache.outputs.value }}
+        run_id: ${{ github.run_id }}
     - if: ${{ steps.file.outputs.filings }}
       name: Get issues from filings
       id: get_issues_from_filings
