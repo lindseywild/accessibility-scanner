@@ -5,17 +5,16 @@ jobs:
   accessibility_scanner:
     runs-on: ubuntu-latest
     steps:
-      - uses: github/accessibility-scanner@v2
+      - uses: lindseywild/accessibility-scanner@copilot-add-page-scroll-test
         with:
           urls: |
-            https://github.com
-            https://primer.style
-            https://primer.style/product/getting-started/foundations/layout/ # requires horizontal scrolling
-            https://primer.style/brand/primitives/color/ # Hex color cut off
-            https://primer.style/react/storybook/?path=/story/components-banner-features--actions-layout-inline # Buttons are overlapping
-            https://support.github.com/request/landing # 2d scroll
-            https://innovationgraph.github.com/ # Content disappears on mobile
-            https://github.com/partners/service-channel-partners # 2d scroll at 200%
+            https://github.com/partners/service-channel-partners
+            https://support.github.com/request/landing
+            https://primer.style/product/getting-started/foundations/layout/
+            https://support.github.com/product-guides
+            https://primer.style/product/ui-patterns/degraded-experiences
+            https://reg.githubuniverse.com/flow/github/universe25/attendee-portal/page/sessioncatalog
+            https://primer.style/product/hooks/useResponsiveValue
           repository: lindseywild/accessibility-scanner
           token: ${{ secrets.GH_TOKEN }}
           cache_key: cached_results-lindseywild-scanner-main.json
