@@ -12,37 +12,52 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   console.log(`Scanning ${page.url()}`);
 
   let findings: Finding[] = [];
-  // try {
-  //   const rawFindings = await new AxeBuilder({ page }).analyze();
-  //   findings = rawFindings.violations.map(violation => ({
-  //     scannerType: 'axe',
-  //     url,
-  //     html: violation.nodes[0].html.replace(/'/g, "&apos;"),
-  //     problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
-  //     problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
-  //     ruleId: violation.id,
-  //     solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
-  //     solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
-  //   }));
-  // } catch (e) {
-  //   console.error('Error during axe accessibility scan:', e);
-  // }
+  try {
+    const rawFindings = await new AxeBuilder({ page }).analyze();
+    findings = rawFindings.violations.map(violation => ({
+      scannerType: 'axe',
+      url,
+      html: violation.nodes[0].html.replace(/'/g, "&apos;"),
+      problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
+      problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
+      ruleId: violation.id,
+      solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
+      solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
+    }));
+  } catch (e) {
+    console.error('Error during axe accessibility scan:', e);
+  }
 
   // Check for horizontal scrolling at 320x256 viewport
   try {
+    // Wait for page to be fully loaded and stable before checking viewport
+    // This prevents false positives from checking before dynamic content finishes loading
+    // Use a shorter timeout (10s) to avoid hanging on pages with persistent connections
+    try {
+      await page.waitForLoadState('networkidle', { timeout: 10000 });
+    } catch (timeoutError) {
+      // If networkidle times out, fall back to domcontentloaded which is less strict
+      console.log('Network idle timeout, falling back to domcontentloaded check');
+      await page.waitForLoadState('domcontentloaded');
+    }
+    
     await page.setViewportSize({ width: 320, height: 256 });
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
-    console.log('widths of page', scrollWidth, clientWidth)
     
-    // If horizontal scroll is required (with 1px tolerance for rounding)
-    if (scrollWidth > clientWidth + 1) {
-      console.log('page is too wide')
+    // Match local test: check without tolerance (don't allow any horizontal scroll)
+    if (scrollWidth > clientWidth) {
+      // Get the lang attribute from the page for the html field
+      // This follows the pattern used by axe-core for page-level findings
+      const lang = await page.evaluate(() => document.documentElement.lang || 'en');
+      // Sanitize lang to prevent injection (only allow valid language codes)
+      const sanitizedLang = lang.replace(/[^a-zA-Z0-9-]/g, '') || 'en';
+      
       findings.push({
         scannerType: 'viewport',
         ruleId: 'horizontal-scroll-320x256',
         url,
-        html: 'n/a',
+        html: `<html lang="${sanitizedLang}">`.replace(/'/g, "&apos;"),
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
         problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
         solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
