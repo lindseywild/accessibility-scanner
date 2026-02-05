@@ -50,3 +50,20 @@ If a page requires horizontal scrolling at this viewport size, a finding is gene
 - **ruleId**: `horizontal-scroll-320x256`
 - **problemShort**: page requires horizontal scrolling at 320x256 viewport
 - **problemUrl**: https://www.w3.org/WAI/WCAG21/Understanding/reflow.html
+
+## Screenshot Capture
+
+When accessibility violations are detected, the scanner automatically captures a screenshot of the page to provide visual context. The screenshot:
+
+- **Captures the viewport state** when the violation was detected
+- **Uses PNG format** for clarity
+- **Embeds directly in GitHub issues** as base64-encoded data URIs
+- **Helps developers understand** the exact visual state that caused the violation
+
+Screenshots are particularly useful for:
+- Layout and responsive design issues (like horizontal scroll violations)
+- Understanding the visual context of violations
+- Documenting before/after states when fixing issues
+- Debugging dynamic content that may change between scans
+
+If screenshot capture fails for any reason, the violation is still reported without the screenshot.
