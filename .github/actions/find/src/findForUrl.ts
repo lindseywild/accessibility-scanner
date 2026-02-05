@@ -6,7 +6,9 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const SCREENSHOT_DIR = path.join(process.cwd(), '.screenshots');
+// Use GITHUB_WORKSPACE to ensure screenshots are saved in the workflow workspace root
+// where the artifact upload step can find them
+const SCREENSHOT_DIR = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), '.screenshots');
 
 export async function findForUrl(url: string, authContext?: AuthContext): Promise<Finding[]> {
   const browser = await playwright.chromium.launch({ headless: true, executablePath: process.env.CI ? '/usr/bin/google-chrome' : undefined });
@@ -19,6 +21,9 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   // Ensure screenshot directory exists
   if (!fs.existsSync(SCREENSHOT_DIR)) {
     fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+    console.log(`Created screenshot directory: ${SCREENSHOT_DIR}`);
+  } else {
+    console.log(`Screenshot directory already exists: ${SCREENSHOT_DIR}`);
   }
 
   let findings: Finding[] = [];
