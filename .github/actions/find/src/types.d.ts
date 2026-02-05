@@ -1,13 +1,12 @@
 export type Finding = {
-  // scannerType: string;
-  // ruleId: string;
+  scannerType: string;
+  ruleId: string;
   url: string;
   html: string;
   problemShort: string;
   problemUrl: string;
   solutionShort: string;
   solutionLong?: string;
-  // screenshot?: string; // Base64-encoded screenshot of the page when violation was detected
 };
 
 export type Cookie = {
