@@ -7,6 +7,7 @@ export type Finding = {
   problemUrl: string;
   solutionShort: string;
   solutionLong?: string;
+  screenshot?: string; // Base64-encoded screenshot of the page when violation was detected
 };
 
 export type Cookie = {
