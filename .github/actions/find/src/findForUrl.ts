@@ -30,7 +30,7 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
 
   try {
     console.log('testing!')
-    // await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('domcontentloaded');
     await page.setViewportSize({ width: 320, height: 256 });
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
