@@ -41,13 +41,19 @@ export async function openIssue(octokit: Octokit, repoWithOwner: string, finding
 - [ ] A test SHOULD be added to ensure this specific axe violation does not regress.
 - [ ] This PR MUST NOT introduce any new accessibility issues or regressions.
 `;
+
+  // Include screenshot if available
+  const screenshotSection = finding.screenshot 
+    ? `\n## Screenshot\n\nScreenshot taken at the time the violation was detected (viewport: 320x256):\n\n![Accessibility Violation Screenshot](data:image/png;base64,${finding.screenshot})\n\n` 
+    : '';
+
   const body = `## What
 An accessibility scan flagged the element \`${finding.html}\` on ${finding.url} because ${finding.problemShort}. Learn more about why this was flagged by visiting ${finding.problemUrl}.
 
 To fix this, ${finding.solutionShort}.
 ${solutionLong ? `\nSpecifically:\n\n${solutionLong}` : ''}
 
-${acceptanceCriteria}
+${screenshotSection}${acceptanceCriteria}
 `;
 
   return octokit.request(`POST /repos/${owner}/${repo}/issues`, {
