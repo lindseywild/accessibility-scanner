@@ -16,6 +16,9 @@ jobs:
             https://support.github.com/request/landing # 2d scroll
             https://innovationgraph.github.com/ # Content disappears on mobile
             https://github.com/partners/service-channel-partners # 2d scroll at 200%
+            https://github.com/primer/view_components/security/code-scanning/5
+            https://github.com/primer/view_components/security/code-scanning?query=is%3Aclosed+branch%3Amain
+            https://github.com/sponsors/explore
           repository: lindseywild/accessibility-scanner
           token: ${{ secrets.GH_TOKEN }}
           cache_key: cached_results-lindseywild-scanner-main.json
