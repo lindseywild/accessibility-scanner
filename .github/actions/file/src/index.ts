@@ -51,24 +51,33 @@ export default async function () {
     },
   });
   const filings = updateFilingsWithNewFindings(cachedFilings, findings);
+  console.log('filings', filings)
 
   for (const filing of filings) {
     let response;
+    console.log('filing', filing)
     try {
       if (isResolvedFiling(filing)) {
+        console.log('isResolvedFiling', isResolvedFiling)
         // Close the filing’s issue (if necessary)
         response = await closeIssue(octokit, new Issue(filing.issue));
+        console.log(response)
         filing.issue.state = "closed";
       } else if (isNewFiling(filing)) {
+        console.log('isNewFiling', isNewFiling)
         // Open a new issue for the filing
         response = await openIssue(octokit, repoWithOwner, filing.findings[0]);
+        console.log(response)
         (filing as any).issue = { state: "open" } as Issue;
       } else if (isRepeatedFiling(filing)) {
+        console.log('isRepeatedFiling', isRepeatedFiling)
         // Reopen the filing’s issue (if necessary)
         response = await reopenIssue(octokit, new Issue(filing.issue));
+        console.log(response)
         filing.issue.state = "reopened";
       }
       if (response?.data && filing.issue) {
+        console.log('in if block')
         // Update the filing with the latest issue data
         filing.issue.id = response.data.id;
         filing.issue.nodeId = response.data.node_id;
