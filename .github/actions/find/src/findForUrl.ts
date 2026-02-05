@@ -3,6 +3,10 @@ import AxeBuilder from '@axe-core/playwright'
 import playwright from 'playwright';
 import { AuthContext } from './AuthContext.js';
 
+// Timeout for waiting for network idle state before viewport checks
+// Balances accuracy (allowing dynamic content to load) with performance (not hanging indefinitely)
+const NETWORK_IDLE_TIMEOUT_MS = 10000;
+
 export async function findForUrl(url: string, authContext?: AuthContext): Promise<Finding[]> {
   const browser = await playwright.chromium.launch({ headless: true, executablePath: process.env.CI ? '/usr/bin/google-chrome' : undefined });
   const contextOptions = authContext?.toPlaywrightBrowserContextOptions() ?? {};
@@ -32,9 +36,8 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   try {
     // Wait for page to be fully loaded and stable before checking viewport
     // This prevents false positives from checking before dynamic content finishes loading
-    // Use a shorter timeout (10s) to avoid hanging on pages with persistent connections
     try {
-      await page.waitForLoadState('networkidle', { timeout: 10000 });
+      await page.waitForLoadState('networkidle', { timeout: NETWORK_IDLE_TIMEOUT_MS });
     } catch (timeoutError) {
       // If networkidle times out, fall back to domcontentloaded which is less strict
       console.log('Network idle timeout, falling back to domcontentloaded check');
