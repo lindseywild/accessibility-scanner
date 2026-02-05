@@ -1,5 +1,5 @@
 import type { Finding } from './types.d.js';
-import AxeBuilder from '@axe-core/playwright'
+import { AxeBuilder } from '@axe-core/playwright'
 import playwright from 'playwright';
 import { AuthContext } from './AuthContext.js';
 import crypto from 'node:crypto';
@@ -32,7 +32,7 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
     
     // Process violations and capture screenshots
     const findingsWithScreenshots = await Promise.all(
-      rawFindings.violations.map(async (violation) => {
+      rawFindings.violations.map(async (violation: any) => {
         let screenshotId: string | undefined;
         
         try {
