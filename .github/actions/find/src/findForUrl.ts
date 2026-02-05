@@ -56,7 +56,7 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
       
       findings.push({
         scannerType: 'viewport',
-        ruleId: 'horizontal-scroll-320x256',
+        ruleId: 'horizontal-scroll',
         url,
         html: 'n/a',
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
