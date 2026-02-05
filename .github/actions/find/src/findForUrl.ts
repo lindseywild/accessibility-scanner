@@ -43,7 +43,7 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
         scannerType: 'viewport',
         ruleId: 'horizontal-scroll-320x256',
         url,
-        html: 'n/a',
+        html: `<html scrollWidth="${scrollWidth}" clientWidth="${clientWidth}">`,
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
         problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
         solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
