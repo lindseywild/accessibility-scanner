@@ -33,39 +33,22 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
     // Wait for page to be fully loaded and stable before checking viewport
     await page.waitForLoadState('domcontentloaded');
     await page.setViewportSize({ width: 320, height: 256 });
-    console.log('scanning page')
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
-    console.log('widths', scrollWidth, clientWidth)
+
+    console.log('widths of page', scrollWidth, clientWidth)
     
-    // Match local test: check without tolerance (don't allow any horizontal scroll)
     if (scrollWidth > clientWidth) {
-      console.log('page is too wide!')
-      
-      // Capture screenshot when violation is detected
-      // let screenshot: string | undefined;
-      // try {
-      //   const screenshotBuffer = await page.screenshot({ 
-      //     fullPage: false,  // Only capture viewport, not full scrollable page
-      //     type: 'png'
-      //   });
-      //   screenshot = screenshotBuffer.toString('base64');
-      //   console.log('Screenshot captured successfully');
-      // } catch (screenshotError) {
-      //   console.error('Failed to capture screenshot:', screenshotError);
-      //   // Continue even if screenshot fails
-      // }
-      
+      console.log('this page is too wide')
       findings.push({
         scannerType: 'viewport',
-        ruleId: 'horizontal-scroll',
+        ruleId: 'horizontal-scroll-320x256',
         url,
         html: 'n/a',
         problemShort: 'page requires horizontal scrolling at 320x256 viewport',
         problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
         solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
         solutionLong: `The page has a scroll width of ${scrollWidth}px but a client width of only ${clientWidth}px at 320x256 viewport, requiring horizontal scrolling. This violates WCAG 2.1 Level AA Success Criterion 1.4.10 (Reflow).`
-        // screenshot
       });
     }
   } catch (e) {
