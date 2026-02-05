@@ -12,31 +12,32 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   console.log(`Scanning ${page.url()}`);
 
   let findings: Finding[] = [];
-  try {
-    const rawFindings = await new AxeBuilder({ page }).analyze();
-    findings = rawFindings.violations.map(violation => ({
-      scannerType: 'axe',
-      url,
-      html: violation.nodes[0].html.replace(/'/g, "&apos;"),
-      problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
-      problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
-      ruleId: violation.id,
-      solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
-      solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
-    }));
-  } catch (e) {
-    console.error('Error during axe accessibility scan:', e);
-  }
+  // try {
+  //   const rawFindings = await new AxeBuilder({ page }).analyze();
+  //   findings = rawFindings.violations.map(violation => ({
+  //     scannerType: 'axe',
+  //     url,
+  //     html: violation.nodes[0].html.replace(/'/g, "&apos;"),
+  //     problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
+  //     problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
+  //     ruleId: violation.id,
+  //     solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
+  //     solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;")
+  //   }));
+  // } catch (e) {
+  //   console.error('Error during axe accessibility scan:', e);
+  // }
 
   // Check for horizontal scrolling at 320x256 viewport
   try {
     await page.setViewportSize({ width: 320, height: 256 });
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    console.log('widths of page', scrollWidth, clientWidth)
     
     // If horizontal scroll is required (with 1px tolerance for rounding)
     if (scrollWidth > clientWidth + 1) {
-      
+      console.log('page is too wide')
       findings.push({
         scannerType: 'viewport',
         ruleId: 'horizontal-scroll-320x256',
