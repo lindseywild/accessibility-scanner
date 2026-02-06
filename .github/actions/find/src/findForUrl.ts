@@ -27,49 +27,49 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   }
 
   let findings: Finding[] = [];
-  try {
-    const rawFindings = await new AxeBuilder({ page }).analyze();
+  // try {
+  //   const rawFindings = await new AxeBuilder({ page }).analyze();
     
-    // Process violations and capture screenshots
-    const findingsWithScreenshots = await Promise.all(
-      rawFindings.violations.map(async (violation: any) => {
-        let screenshotId: string | undefined;
+  //   // Process violations and capture screenshots
+  //   const findingsWithScreenshots = await Promise.all(
+  //     rawFindings.violations.map(async (violation: any) => {
+  //       let screenshotId: string | undefined;
         
-        try {
-          const screenshotBuffer = await page.screenshot({ 
-            fullPage: false,
-            type: 'png'
-          });
+  //       try {
+  //         const screenshotBuffer = await page.screenshot({ 
+  //           fullPage: false,
+  //           type: 'png'
+  //         });
           
-          screenshotId = crypto.randomUUID();
-          const filename = `${screenshotId}.png`;
-          const filepath = path.join(SCREENSHOT_DIR, filename);
+  //         screenshotId = crypto.randomUUID();
+  //         const filename = `${screenshotId}.png`;
+  //         const filepath = path.join(SCREENSHOT_DIR, filename);
           
-          fs.writeFileSync(filepath, screenshotBuffer);
-          console.log(`Screenshot saved: ${filename}`);
-        } catch (error) {
-          console.error('Failed to capture/save screenshot:', error);
-          screenshotId = undefined;
-        }
+  //         fs.writeFileSync(filepath, screenshotBuffer);
+  //         console.log(`Screenshot saved: ${filename}`);
+  //       } catch (error) {
+  //         console.error('Failed to capture/save screenshot:', error);
+  //         screenshotId = undefined;
+  //       }
 
-        return {
-          scannerType: 'axe',
-          url,
-          html: violation.nodes[0].html.replace(/'/g, "&apos;"),
-          problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
-          problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
-          ruleId: violation.id,
-          solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
-          solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;"),
-          screenshotId
-        };
-      })
-    );
+  //       return {
+  //         scannerType: 'axe',
+  //         url,
+  //         html: violation.nodes[0].html.replace(/'/g, "&apos;"),
+  //         problemShort: violation.help.toLowerCase().replace(/'/g, "&apos;"),
+  //         problemUrl: violation.helpUrl.replace(/'/g, "&apos;"),
+  //         ruleId: violation.id,
+  //         solutionShort: violation.description.toLowerCase().replace(/'/g, "&apos;"),
+  //         solutionLong: violation.nodes[0].failureSummary?.replace(/'/g, "&apos;"),
+  //         screenshotId
+  //       };
+  //     })
+  //   );
     
-    findings = findingsWithScreenshots;
-  } catch (e) {
-    // do something with the error
-  }
+  //   findings = findingsWithScreenshots;
+  // } catch (e) {
+  //   // do something with the error
+  // }
 
   try {
     console.log('testing!')
