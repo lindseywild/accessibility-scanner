@@ -80,52 +80,23 @@ runs:
       with:
         urls: ${{ inputs.urls }}
         auth_context: ${{ inputs.auth_context || steps.auth.outputs.auth_context }}
-    - name: Debug - List screenshot directory
-      if: always()
-      shell: bash
-      run: |
-        echo "Current directory: $(pwd)"
-        echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-        echo "Contents of current directory:"
-        ls -la
-        echo "Looking for .screenshots directory:"
-        ls -la .screenshots/ 2>&1 || echo ".screenshots/ not found in current directory"
-        echo "Looking in GITHUB_WORKSPACE:"
-        ls -la $GITHUB_WORKSPACE/.screenshots/ 2>&1 || echo ".screenshots/ not found in GITHUB_WORKSPACE"
     - name: Package Screenshots
       if: always()
       shell: bash
       run: |
-        echo "Current directory for packaging: $(pwd)"
         if [ -d ".screenshots" ]; then
           FILE_COUNT=$(ls -1 .screenshots/ 2>/dev/null | wc -l)
           echo "Found .screenshots directory with $FILE_COUNT files"
           if [ "$FILE_COUNT" -gt 0 ]; then
-            echo "Packaging screenshots into tarball..."
+            echo "Packaging $FILE_COUNT screenshots into tarball..."
             tar -czf screenshots.tar.gz .screenshots/
-            echo "Tarball created:"
+            echo "✓ Tarball created successfully"
             ls -lh screenshots.tar.gz
-            echo "Tarball contents:"
-            tar -tzf screenshots.tar.gz | head -10
           else
-            echo "No files in .screenshots directory"
+            echo "No files in .screenshots directory to package"
           fi
         else
           echo "No .screenshots directory found"
-        fi
-    - name: Verify Tarball Before Upload
-      if: always()
-      shell: bash
-      run: |
-        echo "Checking for tarball before upload..."
-        if [ -f "screenshots.tar.gz" ]; then
-          echo "✓ Tarball exists: screenshots.tar.gz"
-          ls -lh screenshots.tar.gz
-          echo "Ready for upload"
-        else
-          echo "✗ Tarball NOT found - artifacts will not be uploaded"
-          echo "Listing current directory:"
-          ls -la
         fi
     - name: Upload Screenshots
       if: always()
