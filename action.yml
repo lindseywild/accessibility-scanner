@@ -80,7 +80,14 @@ runs:
       with:
         urls: ${{ inputs.urls }}
         auth_context: ${{ inputs.auth_context || steps.auth.outputs.auth_context }}
+    - name: Save Screenshots to gh-cache
+      if: always()
+      uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/gh-cache/save
+      with:
+        path: .screenshots
+        token: ${{ inputs.token }}
     - name: File
+      if: always()
       id: file
       uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/file
       with:
@@ -88,6 +95,7 @@ runs:
         repository: ${{ inputs.repository }}
         token: ${{ inputs.token }}
         cached_filings: ${{ steps.normalize_cache.outputs.value }}
+        run_id: ${{ github.run_id }}
     - if: ${{ steps.file.outputs.filings }}
       name: Get issues from filings
       id: get_issues_from_filings
