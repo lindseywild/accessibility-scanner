@@ -23,15 +23,16 @@ export function generateIssueBody(
   
   // Add screenshot section if screenshot was captured
   let screenshotSection = '';
-  if (finding.screenshotId && runId) {
-    const artifactUrl = `https://github.com/${repoWithOwner}/actions/runs/${runId}/artifacts`;
+  if (finding.screenshotId) {
+    const screenshotUrl = `https://raw.githubusercontent.com/${repoWithOwner}/gh-cache/.screenshots/${finding.screenshotId}.png`;
     screenshotSection = `\n\n## Screenshot
 
-A screenshot was captured when this issue was detected. You can view it in the workflow artifacts.
+A screenshot was captured when this issue was detected.
 
-[📸 View screenshots in workflow artifacts](${artifactUrl})
+![Screenshot](${screenshotUrl})
 
 > Screenshot ID: \`${finding.screenshotId}\`
+> [View in gh-cache branch](https://github.com/${repoWithOwner}/blob/gh-cache/.screenshots/${finding.screenshotId}.png)
 `;
   }
   

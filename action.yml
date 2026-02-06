@@ -80,32 +80,12 @@ runs:
       with:
         urls: ${{ inputs.urls }}
         auth_context: ${{ inputs.auth_context || steps.auth.outputs.auth_context }}
-    - name: Package Screenshots
+    - name: Save Screenshots to gh-cache
       if: always()
-      shell: bash
-      run: |
-        if [ -d ".screenshots" ]; then
-          FILE_COUNT=$(ls -1 .screenshots/ 2>/dev/null | wc -l)
-          echo "Found .screenshots directory with $FILE_COUNT files"
-          if [ "$FILE_COUNT" -gt 0 ]; then
-            echo "Packaging $FILE_COUNT screenshots into tarball..."
-            tar -czf screenshots.tar.gz .screenshots/
-            echo "✓ Tarball created successfully"
-            ls -lh screenshots.tar.gz
-          else
-            echo "No files in .screenshots directory to package"
-          fi
-        else
-          echo "No .screenshots directory found"
-        fi
-    - name: Upload Screenshots
-      if: always()
-      uses: actions/upload-artifact@v4
+      uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/gh-cache/save
       with:
-        name: accessibility-screenshots
-        path: screenshots.tar.gz
-        retention-days: 30
-        if-no-files-found: warn
+        path: .screenshots
+        token: ${{ inputs.token }}
     - name: File
       if: always()
       id: file
