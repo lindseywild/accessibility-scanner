@@ -94,10 +94,10 @@ runs:
         ls -la $GITHUB_WORKSPACE/.screenshots/ 2>&1 || echo ".screenshots/ not found in GITHUB_WORKSPACE"
     - name: Upload Screenshots
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: accessibility-screenshots
-        path: ${{ github.workspace }}/.screenshots/*.png
+        path: .screenshots/
         retention-days: 30
         if-no-files-found: ignore
     - name: File
