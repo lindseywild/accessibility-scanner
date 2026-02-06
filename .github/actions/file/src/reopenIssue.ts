@@ -4,7 +4,16 @@ import type { Finding } from './types.d.js';
 import { generateIssueBody } from './generateIssueBody.js';
 
 export async function reopenIssue(octokit: Octokit, issue: Issue, finding?: Finding) {
-  const params: any = {
+  interface ReopenParams {
+    owner: string;
+    repo: string;
+    issue_number: number;
+    state: string;
+    body?: string;
+    [key: string]: unknown;
+  }
+  
+  const params: ReopenParams = {
     owner: issue.owner,
     repo: issue.repository,
     issue_number: issue.issueNumber,
