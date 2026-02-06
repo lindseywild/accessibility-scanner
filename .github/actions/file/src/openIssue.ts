@@ -35,6 +35,14 @@ export async function openIssue(octokit: Octokit, repoWithOwner: string, finding
         : line
     )
     .join("\n");
+  
+  // Generate screenshot URL if available
+  let screenshotSection = '';
+  if (finding.screenshotPath) {
+    const screenshotUrl = `https://raw.githubusercontent.com/${owner}/${repo}/gh-cache/${finding.screenshotPath}`;
+    screenshotSection = `\n## Screenshot\n\n![Screenshot of accessibility violation](${screenshotUrl})\n`;
+  }
+  
   const acceptanceCriteria = `## Acceptance Criteria
 - [ ] The specific axe violation reported in this issue is no longer reproducible.
 - [ ] The fix MUST meet WCAG 2.1 guidelines OR the accessibility standards specified by the repository or organization.
@@ -46,7 +54,7 @@ An accessibility scan flagged the element \`${finding.html}\` on ${finding.url} 
 
 To fix this, ${finding.solutionShort}.
 ${solutionLong ? `\nSpecifically:\n\n${solutionLong}` : ''}
-
+${screenshotSection}
 ${acceptanceCriteria}
 `;
 
