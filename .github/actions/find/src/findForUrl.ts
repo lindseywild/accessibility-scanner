@@ -70,6 +70,53 @@ export async function findForUrl(url: string, authContext?: AuthContext): Promis
   } catch (e) {
     // do something with the error
   }
+
+  try {
+    console.log('testing!')
+    await page.waitForLoadState('domcontentloaded');
+    await page.setViewportSize({ width: 320, height: 256 });
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+
+    console.log('widths of page', scrollWidth, clientWidth)
+
+    if (scrollWidth > clientWidth) {
+      console.log('this page is too wide')
+      let screenshotId: string | undefined;
+      
+      try {
+        const screenshotBuffer = await page.screenshot({ 
+          fullPage: true,
+          type: 'png'
+        });
+        
+        screenshotId = crypto.randomUUID();
+        const filename = `${screenshotId}.png`;
+        const filepath = path.join(SCREENSHOT_DIR, filename);
+        
+        fs.writeFileSync(filepath, screenshotBuffer);
+        console.log(`Screenshot saved: ${filename}`);
+      } catch (error) {
+        console.error('Failed to capture/save screenshot:', error);
+        screenshotId = undefined;
+      }
+
+      findings.push({
+        scannerType: 'reflow',
+        ruleId: 'horizontal-scroll-320x256',
+        url,
+        html: `<html scrollWidth="${scrollWidth}" clientWidth="${clientWidth}">`,
+        problemShort: 'page requires horizontal scrolling at 320x256 viewport',
+        problemUrl: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
+        solutionShort: 'ensure content is responsive and does not require horizontal scrolling at small viewport sizes',
+        solutionLong: `The page has a scroll width of ${scrollWidth}px but a client width of only ${clientWidth}px at 320x256 viewport, requiring horizontal scrolling. This violates WCAG 2.1 Level AA Success Criterion 1.4.10 (Reflow).`,
+        screenshotId
+      });
+    }
+  } catch (e) {
+    console.error('Error checking horizontal scroll:', e);
+  }
+  
   await context.close();
   await browser.close();
   return findings;
