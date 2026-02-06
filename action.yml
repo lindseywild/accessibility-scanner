@@ -92,12 +92,24 @@ runs:
         ls -la .screenshots/ 2>&1 || echo ".screenshots/ not found in current directory"
         echo "Looking in GITHUB_WORKSPACE:"
         ls -la $GITHUB_WORKSPACE/.screenshots/ 2>&1 || echo ".screenshots/ not found in GITHUB_WORKSPACE"
+    - name: Package Screenshots
+      if: always()
+      shell: bash
+      run: |
+        if [ -d ".screenshots" ] && [ "$(ls -A .screenshots 2>/dev/null)" ]; then
+          echo "Packaging screenshots into tarball..."
+          tar -czf screenshots.tar.gz .screenshots/
+          echo "Tarball created:"
+          ls -lh screenshots.tar.gz
+        else
+          echo "No screenshots to package"
+        fi
     - name: Upload Screenshots
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: accessibility-screenshots
-        path: .screenshots/
+        path: screenshots.tar.gz
         retention-days: 30
         if-no-files-found: ignore
     - name: File
