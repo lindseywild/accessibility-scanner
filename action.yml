@@ -80,8 +80,15 @@ runs:
       with:
         urls: ${{ inputs.urls }}
         auth_context: ${{ inputs.auth_context || steps.auth.outputs.auth_context }}
+    - if: ${{ hashFiles('screenshots/*.png') != '' }}
+      name: Save screenshots to gh-cache
+      uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/gh-cache/save
+      with:
+        path: screenshots
+        token: ${{ inputs.token }}
     - name: File
       id: file
+      if: always()
       uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/file
       with:
         findings: ${{ steps.find.outputs.findings }}

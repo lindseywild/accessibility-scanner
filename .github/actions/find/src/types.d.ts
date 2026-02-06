@@ -5,6 +5,9 @@ export type Finding = {
   problemUrl: string;
   solutionShort: string;
   solutionLong?: string;
+  scannerType: string;
+  ruleId: string;
+  screenshotPath?: string;
 };
 
 export type Cookie = {
