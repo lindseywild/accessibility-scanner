@@ -107,6 +107,7 @@ runs:
         retention-days: 30
         if-no-files-found: warn
     - name: File
+      if: always()
       id: file
       uses: ./../../_actions/github/accessibility-scanner/current/.github/actions/file
       with:
